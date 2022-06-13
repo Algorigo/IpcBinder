@@ -22,7 +22,9 @@
             </intent-filter>
         </service>
 
-        <activity android:name="com.algorigo.bridge.BindActivity">
+        <activity
+            android:name="com.algorigo.bridge.BindActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

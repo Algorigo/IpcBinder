@@ -25,29 +25,28 @@ class RxIpcBinder private constructor() {
             val subscribeId = iRxService?.subscribe(this@RxIpcBinder.hashCode(), observableId)
             if (subscribeId != null) {
                 val subject = PublishSubject.create<Pair<String, ByteArray>>()
-                subjectMap[subscribeId] = subject
-                subject
-                    .doOnDispose {
+                subjectMap[subscribeId] = subject.apply {
+                    doOnDispose {
                         Log.i(LOG_TAG,"subscribeActual::doOnDispose")
                         iRxService?.dispose(this@RxIpcBinder.hashCode(), subscribeId)
                     }
-                    .doFinally {
-                        Log.i(LOG_TAG,"subscribeActual::doFinally")
-                        if (!subject.hasObservers()) {
-                            subjectMap.remove(subscribeId)
+                        .doFinally {
+                            Log.i(LOG_TAG,"subscribeActual::doFinally")
+                            if (!subject.hasObservers()) {
+                                subjectMap.remove(subscribeId)
+                            }
                         }
-                    }
-                    .map {
-                        ByteArrayObject.createFrom(it.first, it.second)
-                    }
-                    .subscribe(observer)
+                        .map {
+                            ByteArrayObject.createFrom(it.first, it.second)
+                        }
+                        .subscribe(observer)
+                }
             }
         }
     }
 
     class IpcBinderException(exceptionName: String, stackString: String) : Exception("$exceptionName : $stackString")
     class BindFailedException : Exception()
-    class NotBoundExcpetion : Exception()
     class IpcDisconnectedException : Exception()
 
     private var iRxService: IRxService? = null
@@ -87,7 +86,9 @@ class RxIpcBinder private constructor() {
         override fun onServiceDisconnected(name: ComponentName?) {
             Log.i(LOG_TAG, "onServiceDisconnected : $name")
             iRxService = null
-            bindSubject.onError(IpcDisconnectedException())
+            if (bindSubject.hasObservers()) {
+                bindSubject.onError(IpcDisconnectedException())
+            }
         }
     }
 
@@ -104,12 +105,14 @@ class RxIpcBinder private constructor() {
             }
             .doFinally {
                 Log.i(LOG_TAG, "bind doFinally")
-                subjectMap.toList().forEach { pair ->
-                    iRxService?.dispose(hashCode(), pair.first)
-                    pair.second.onError(IpcDisconnectedException())
+                val iterator = subjectMap.iterator()
+                while (iterator.hasNext()) {
+                    iterator.next().let {
+                        iRxService?.dispose(hashCode(), it.key)
+                        it.value.onError(IpcDisconnectedException())
+                    }
+                    iterator.remove()
                 }
-                subjectMap.clear()
-                iRxService?.clearCallback(hashCode())
                 Completable.timer(1, TimeUnit.SECONDS)
                     .subscribe {
                         context.unbindService(connection)
@@ -123,7 +126,7 @@ class RxIpcBinder private constructor() {
         return if (observableId != null) {
             IpcObservable(observableId)
         } else {
-            Observable.error(NotBoundExcpetion())
+            Observable.error(IpcDisconnectedException())
         }
     }
 

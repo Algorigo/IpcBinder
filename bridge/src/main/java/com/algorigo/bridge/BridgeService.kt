@@ -42,7 +42,7 @@ class BridgeService : RxService() {
 
     override fun getObservable(type: Int, values: ByteArray): Observable<ByteArrayObject> {
         return when (type) {
-            0 -> getIntervalObservable(values)
+            OBSERVABLE_TYPE_INTERVAL -> getIntervalObservable(values)
             else -> Observable.error(IllegalArgumentException())
         }
             .doFinally {
@@ -67,6 +67,8 @@ class BridgeService : RxService() {
         private const val CHANNEL_ID = "channe_one"
         private const val CHANNEL_NAME = "Channel Name"
         private const val NOTIFICATION_ID = 1
+
+        const val OBSERVABLE_TYPE_INTERVAL = 0
     }
 }
 

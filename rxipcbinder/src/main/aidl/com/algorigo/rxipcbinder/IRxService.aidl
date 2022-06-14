@@ -11,7 +11,6 @@ interface IRxService {
      * and return values in AIDL.
      */
     void setCallback(int objectId, IRxServiceCallback callback);
-    void clearCallback(int objectId);
 
     int createRxObject(int objectId, int type, in byte[] values);
     void releaseRxObject(int objectId, int observableId);

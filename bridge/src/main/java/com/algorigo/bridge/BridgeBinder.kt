@@ -13,7 +13,7 @@ class BridgeBinder private constructor(private val rxIpcBinder: RxIpcBinder){
         val periodBytes = period.toByteArray()
         val intervalTimeUnit = timeUnit.toByteArray()
         val params = periodBytes + intervalTimeUnit
-        return rxIpcBinder.getObservable(0, params)
+        return rxIpcBinder.getObservable(BridgeService.OBSERVABLE_TYPE_INTERVAL, params)
             .map {
                 it as StringObject
             }

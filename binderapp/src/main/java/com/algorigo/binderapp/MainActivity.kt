@@ -76,6 +76,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val LOG_TAG = "IpcBinder:binderapp:Mai"
+        private val LOG_TAG = MainActivity::class.java.simpleName
     }
 }

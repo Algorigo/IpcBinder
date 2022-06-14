@@ -23,7 +23,7 @@
         </service>
 
         <activity
-            android:name="com.algorigo.bridge.BindActivity"
+            android:name="com.algorigo.bridge.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,10 +31,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name="com.algorigo.bridge.StartActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
     </application>
 
 </manifest>

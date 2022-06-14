@@ -1,6 +1,7 @@
 package com.algorigo.bridge
 
 import android.content.Context
+import android.os.Build
 import com.algorigo.rxipcbinder.RxIpcBinder
 import io.reactivex.rxjava3.core.Observable
 import java.nio.ByteBuffer
@@ -20,7 +21,13 @@ class BridgeBinder private constructor(private val rxIpcBinder: RxIpcBinder){
 
     companion object {
         fun bind(context: Context): Observable<BridgeBinder> {
-            return RxIpcBinder.bind(context, "com.algorigo.bridge", BridgeService::class.java.name)
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                RxIpcBinder.bind(context, BridgeService::class.java.packageName, BridgeService::class.java.name)
+            } else {
+                BridgeService::class.java.`package`?.name?.let {
+                    RxIpcBinder.bind(context, it, BridgeService::class.java.name)
+                } ?: throw NullPointerException("BridgeService package name is null:${BridgeService::class.java.`package`}")
+            }
                 .map {
                     BridgeBinder(it)
                 }

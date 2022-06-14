@@ -55,11 +55,7 @@ class BridgeService : RxService() {
     }
 
     private fun getIntervalObservable(values: ByteArray): Observable<ByteArrayObject> {
-        val period = values.copyOfRange(0, 8).toLong()
-        val timeUnit = values[8].toTimeUnit()
-        return Observable.interval(period, timeUnit)
-            .map { it.toString() }
-            .map { StringObject(it) }
+        return IntervalObservable(values)
     }
 
     companion object {

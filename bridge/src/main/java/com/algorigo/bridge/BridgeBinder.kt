@@ -10,10 +10,10 @@ import java.util.concurrent.TimeUnit
 class BridgeBinder private constructor(private val rxIpcBinder: RxIpcBinder){
 
     fun getIntervalObservable(period: Long, timeUnit: TimeUnit): Observable<StringObject> {
-        val periodBytes = period.toByteArray()
-        val intervalTimeUnit = timeUnit.toByteArray()
-        val params = periodBytes + intervalTimeUnit
-        return rxIpcBinder.getObservable(BridgeService.OBSERVABLE_TYPE_INTERVAL, params)
+        return IntervalObservable.getObservableTypeAndParam(period, timeUnit)
+            .let {
+                rxIpcBinder.getObservable(it.first, it.second)
+            }
             .map {
                 it as StringObject
             }

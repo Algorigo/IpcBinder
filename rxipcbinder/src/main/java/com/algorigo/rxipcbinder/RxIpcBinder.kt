@@ -97,7 +97,7 @@ class RxIpcBinder private constructor() {
             .doOnSubscribe {
                 val intent = Intent(className)
                 intent.setPackage(packageName)
-                intent.putExtra("ObjectId", hashCode())
+                intent.putExtra(RxService.OBJECT_ID, hashCode())
                 val result = context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
                 if (!result) {
                     bindSubject.onError(BindFailedException())

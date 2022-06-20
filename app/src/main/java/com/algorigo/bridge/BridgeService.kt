@@ -10,8 +10,6 @@ import com.algorigo.rxipcbinder.ByteArrayObject
 import com.algorigo.rxipcbinder.RxService
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.nio.ByteBuffer
-import java.util.concurrent.TimeUnit
 
 class BridgeService : RxService() {
 
@@ -42,7 +40,7 @@ class BridgeService : RxService() {
 
     override fun getObservable(type: Int, values: ByteArray): Observable<ByteArrayObject> {
         return when (type) {
-            OBSERVABLE_TYPE_INTERVAL -> getIntervalObservable(values)
+            BridgeObservableType.Interval.value -> getIntervalObservable(values)
             else -> Observable.error(IllegalArgumentException())
         }
             .doFinally {
@@ -63,16 +61,5 @@ class BridgeService : RxService() {
         private const val CHANNEL_ID = "channe_one"
         private const val CHANNEL_NAME = "Channel Name"
         private const val NOTIFICATION_ID = 1
-
-        const val OBSERVABLE_TYPE_INTERVAL = 0
     }
-}
-
-fun ByteArray.toLong(): Long {
-    val buffer = ByteBuffer.wrap(this)
-    return buffer.long
-}
-
-fun Byte.toTimeUnit(): TimeUnit {
-    return TimeUnit.values()[this.toInt()]
 }

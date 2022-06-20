@@ -27,7 +27,7 @@ class IntervalObservable(values: ByteArray): Observable<ByteArrayObject>() {
             val periodBytes = period.toByteArray()
             val intervalTimeUnit = timeUnit.toByteArray()
             val params = periodBytes + intervalTimeUnit
-            return Pair(BridgeService.OBSERVABLE_TYPE_INTERVAL, params)
+            return Pair(BridgeObservableType.Interval.value, params)
         }
     }
 }

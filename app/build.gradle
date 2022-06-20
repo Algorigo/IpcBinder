@@ -44,6 +44,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation project(':bridge')
+    implementation project(':rxipcbinder')
 
     // ReactiveX
     implementation 'io.reactivex.rxjava3:rxkotlin:3.0.1'

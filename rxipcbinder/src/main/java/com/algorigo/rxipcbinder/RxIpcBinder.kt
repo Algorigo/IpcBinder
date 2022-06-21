@@ -99,7 +99,7 @@ class RxIpcBinder private constructor() {
                 intent.setPackage(packageName)
                 intent.putExtra(RxService.OBJECT_ID, hashCode())
                 val result = context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
-                if (!result) {
+                if (!result && bindSubject.hasObservers()) {
                     bindSubject.onError(BindFailedException())
                 }
             }
@@ -109,7 +109,9 @@ class RxIpcBinder private constructor() {
                 while (iterator.hasNext()) {
                     iterator.next().let {
                         iRxService?.dispose(hashCode(), it.key)
-                        it.value.onError(IpcDisconnectedException())
+                        if (it.value.hasObservers()) {
+                            it.value.onError(IpcDisconnectedException())
+                        }
                     }
                     iterator.remove()
                 }

@@ -1,8 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
-def versionStr="0.1.0"
-
 def getCurrentGitBranch() {
     def gitBranch = "Unknown branch"
     try {

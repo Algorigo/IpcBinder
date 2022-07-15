@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity() {
     private var bridgeBinder: BridgeBinder? = null
     private var bindDisposable: Disposable? = null
     private var observableDisposable: Disposable? = null
+    private var bindAndObserveDisposable: Disposable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,13 +70,42 @@ class MainActivity : AppCompatActivity() {
                     })
             }
         }
+
+        binding.startBtn2.setOnClickListener {
+            if (bindAndObserveDisposable != null){
+                bindAndObserveDisposable?.dispose()
+            } else {
+                bindAndObserveDisposable = BridgeBinder.bind(this)
+                    .flatMap {
+                        it.getIntervalObservable(1, TimeUnit.SECONDS)
+                    }
+                    .doFinally {
+                        bindAndObserveDisposable = null
+                    }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnDispose {
+                        printResult2("Disposed")
+                    }
+                    .subscribe({
+                        printResult2("$it")
+                    }, {
+                        printResult2("$it")
+                    }, {
+                        printResult2("Completed")
+                    })
+            }
+        }
     }
 
     private fun printResult(result: String) {
         binding.resultView.text = result + "\n" + binding.resultView.text
     }
 
+    private fun printResult2(result: String) {
+        binding.resultView2.text = result + "\n" + binding.resultView2.text
+    }
+
     companion object {
-        private const val LOG_TAG = "IpcBinder:binderapp:Mai"
+        private val LOG_TAG = MainActivity::class.java.simpleName
     }
 }

@@ -23,16 +23,6 @@ abstract class RxService : Service() {
             listenerMap[objectId] = callback
         }
 
-        override fun clearCallback(objectId: Int) {
-            Log.i(LOG_TAG, "clearCallback:${objectId}")
-            disposables[objectId]?.values?.forEach {
-                it.dispose()
-            }
-            disposables.remove(objectId)
-            observableMap.remove(objectId)
-            listenerMap.remove(objectId)
-        }
-
         override fun createRxObject(objectId: Int, type: Int, params: ByteArray): Int {
             val observableId = (Math.random() * Int.MAX_VALUE).toInt()
             val observable = getObservable(type, params)
@@ -50,13 +40,11 @@ abstract class RxService : Service() {
                 val subscribeId = (Math.random() * Int.MAX_VALUE).toInt()
                 val disposable = observable
                     .doFinally {
-                        disposables.remove(subscribeId)
+                        disposables[objectId]?.remove(subscribeId)
                     }
                     .observeOn(Schedulers.io())
                     .subscribe({
-                        it.toByteArray().also {
-                            listenerMap[objectId]?.callbackMessage(subscribeId, RxMessageType.TYPE_ON_NEXT, it.first, it.second)
-                        }
+                        listenerMap[objectId]?.callbackMessage(subscribeId, RxMessageType.TYPE_ON_NEXT, it.javaClass.name, it.toByteArray())
                     }, {
                         listenerMap[objectId]?.callbackMessage(subscribeId, RxMessageType.TYPE_ON_ERROR, it.javaClass.name, it.stackTraceToString().toByteArray(Charsets.UTF_8))
                     }, {
@@ -86,6 +74,9 @@ abstract class RxService : Service() {
     override fun onUnbind(intent: Intent?): Boolean {
         Log.i(LOG_TAG, "onUnbind:${intent?.action}:${intent?.extras?.keySet()?.toTypedArray()?.contentToString()}")
         val objectId = intent?.getIntExtra(OBJECT_ID, -1)
+        disposables.remove(objectId)?.values?.forEach { it.dispose() }
+        observableMap.remove(objectId)
+        listenerMap.remove(objectId)
         return true
     }
 
@@ -102,7 +93,7 @@ abstract class RxService : Service() {
     }
 
     companion object {
-        private const val LOG_TAG = "IpcBinder:lib:RxService"
+        private val LOG_TAG = RxService::class.java.simpleName
         const val OBJECT_ID = "ObjectId"
     }
 }

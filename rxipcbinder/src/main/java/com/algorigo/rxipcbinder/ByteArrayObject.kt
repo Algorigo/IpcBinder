@@ -4,7 +4,7 @@ abstract class ByteArrayObject {
 
     class NotParcelableObjectException: Throwable()
 
-    abstract fun toByteArray(): Pair<String, ByteArray>
+    abstract fun toByteArray(): ByteArray
 
     companion object {
         fun createFrom(name: String, byteArray: ByteArray): ByteArrayObject {

@@ -14,8 +14,8 @@ class StringObject() : ByteArrayObject() {
         string = byteArray.toString(Charsets.UTF_8)
     }
 
-    override fun toByteArray(): Pair<String, ByteArray> {
-        return Pair(javaClass.name, string.toByteArray(Charsets.UTF_8))
+    override fun toByteArray(): ByteArray {
+        return string.toByteArray(Charsets.UTF_8)
     }
 
     override fun toString(): String {

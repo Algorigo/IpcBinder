@@ -44,9 +44,7 @@ abstract class RxService : Service() {
                     }
                     .observeOn(Schedulers.io())
                     .subscribe({
-                        it.toByteArray().also {
-                            listenerMap[objectId]?.callbackMessage(subscribeId, RxMessageType.TYPE_ON_NEXT, it.first, it.second)
-                        }
+                        listenerMap[objectId]?.callbackMessage(subscribeId, RxMessageType.TYPE_ON_NEXT, it.javaClass.name, it.toByteArray())
                     }, {
                         listenerMap[objectId]?.callbackMessage(subscribeId, RxMessageType.TYPE_ON_ERROR, it.javaClass.name, it.stackTraceToString().toByteArray(Charsets.UTF_8))
                     }, {
@@ -95,7 +93,7 @@ abstract class RxService : Service() {
     }
 
     companion object {
-        private const val LOG_TAG = "IpcBinder:lib:RxService"
+        private val LOG_TAG = RxService::class.java.simpleName
         const val OBJECT_ID = "ObjectId"
     }
 }

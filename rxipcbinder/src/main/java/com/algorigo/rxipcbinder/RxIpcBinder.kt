@@ -133,7 +133,7 @@ class RxIpcBinder private constructor() {
     }
 
     companion object {
-        private const val LOG_TAG = "IpcBinder:lib:RxIpcBind"
+        private val LOG_TAG = RxIpcBinder::class.java.simpleName
 
         fun bind(context: Context, packageName: String, className: String): Observable<RxIpcBinder> {
             val rxIpcBinder = RxIpcBinder()

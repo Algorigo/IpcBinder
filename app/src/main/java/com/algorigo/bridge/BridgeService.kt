@@ -56,6 +56,10 @@ class BridgeService : RxService() {
         return IntervalObservable(values)
     }
 
+    override fun getServiceVersion(): Int {
+        return CommVersion.VERSION
+    }
+
     companion object {
         private const val LOG_TAG = "IpcBinder:bridge:Bridge"
         private const val CHANNEL_ID = "channe_one"

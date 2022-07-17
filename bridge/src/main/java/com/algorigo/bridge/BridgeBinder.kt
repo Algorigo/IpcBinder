@@ -19,7 +19,7 @@ class BridgeBinder private constructor(private val rxIpcBinder: RxIpcBinder){
 
     companion object {
         fun bind(context: Context): Observable<BridgeBinder> {
-            return RxIpcBinder.bind(context, "com.algorigo.bridge", "com.algorigo.bridge.BridgeService")
+            return RxIpcBinder.bind(context, "com.algorigo.bridge", "com.algorigo.bridge.BridgeService", CommVersion.VERSION)
                 .map {
                     BridgeBinder(it)
                 }

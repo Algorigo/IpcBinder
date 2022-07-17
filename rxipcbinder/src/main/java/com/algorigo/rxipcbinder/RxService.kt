@@ -23,6 +23,10 @@ abstract class RxService : Service() {
             listenerMap[objectId] = callback
         }
 
+        override fun checkVersion(binderVersion: Int): Int {
+            return getServiceVersion() - binderVersion
+        }
+
         override fun createRxObject(objectId: Int, type: Int, params: ByteArray): Int {
             val observableId = (Math.random() * Int.MAX_VALUE).toInt()
             val observable = getObservable(type, params)
@@ -81,6 +85,8 @@ abstract class RxService : Service() {
     }
 
     protected abstract fun getObservable(type: Int, values: ByteArray): Observable<ByteArrayObject>
+
+    protected abstract fun getServiceVersion(): Int
 
     override fun onDestroy() {
         super.onDestroy()

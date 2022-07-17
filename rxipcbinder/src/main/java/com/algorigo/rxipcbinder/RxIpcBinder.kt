@@ -48,6 +48,8 @@ class RxIpcBinder private constructor() {
     class IpcBinderException(exceptionName: String, stackString: String) : Exception("$exceptionName : $stackString")
     class BindFailedException : Exception()
     class IpcDisconnectedException : Exception()
+    class NeedToUpdateClient : Exception()
+    class NeedToUpdateService : Exception()
 
     private var iRxService: IRxService? = null
     private var bindSubject = PublishSubject.create<RxIpcBinder>()
@@ -135,9 +137,18 @@ class RxIpcBinder private constructor() {
     companion object {
         private val LOG_TAG = RxIpcBinder::class.java.simpleName
 
-        fun bind(context: Context, packageName: String, className: String): Observable<RxIpcBinder> {
+        fun bind(context: Context, packageName: String, className: String, binderVersion: Int): Observable<RxIpcBinder> {
             val rxIpcBinder = RxIpcBinder()
             return rxIpcBinder.bind(context, packageName, className)
+                .doOnNext {
+                    it.iRxService?.checkVersion(binderVersion)?.let { check ->
+                        if (check > 0) {
+                            throw NeedToUpdateClient()
+                        } else if (check < 0) {
+                            throw NeedToUpdateService()
+                        }
+                    }
+                }
         }
     }
 }

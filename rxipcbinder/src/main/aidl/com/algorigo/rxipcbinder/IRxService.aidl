@@ -12,6 +12,7 @@ interface IRxService {
      */
     void setCallback(int objectId, IRxServiceCallback callback);
 
+    int checkVersion(int binderVersion);
     int createRxObject(int objectId, int type, in byte[] values);
     void releaseRxObject(int objectId, int observableId);
     int subscribe(int objectId, int observableId);

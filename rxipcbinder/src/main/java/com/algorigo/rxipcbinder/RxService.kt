@@ -28,14 +28,14 @@ abstract class RxService : Service() {
         }
 
         override fun createRxObject(objectId: Int, type: Int, params: ByteArray): Int {
-            val observableId = (Math.random() * Int.MAX_VALUE).toInt()
             val observable = getObservable(type, params)
+            val observableId = observable.hashCode()
             observableMap[objectId]?.set(observableId, observable)
             return observableId
         }
 
         override fun releaseRxObject(objectId: Int, observableId: Int) {
-            observableMap.remove(observableId)
+            observableMap[objectId]?.remove(observableId)
         }
 
         override fun subscribe(objectId: Int, observableId: Int): Int {
